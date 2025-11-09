@@ -50,19 +50,34 @@ async function run() {
       }
     });
 
-    
+    // Get all available foods
+    app.get("/foods", async (req, res) => {
+      try {
+        const filter = { food_status: "Available" };
+        if (req.query.email) {
+          filter["donator.email"] = req.query.email;
+        }
+        const result = await foodsCollection.find(filter).toArray();
+        res.send(result);
+      } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: "Failed to fetch foods" });
+      }
+    });
 
-    // ------------------------------ PING TEST ------------------------------
+
+
+    //Ping the database
     await db.command({ ping: 1 });
     console.log(" Pinged the database - connection confirmed!");
   } catch (err) {
-    console.error("❌ Database connection failed:", err);
+    console.error("Database connection failed:", err);
   }
 }
 
 run().catch(console.error);
 
-// ---------- server start ----------
+// Start the server
 app.listen(port, () =>
-  console.log(`🚀 PlateShare server running on port ${port}`)
+  console.log(`PlateShare server running on port ${port}`)
 );
