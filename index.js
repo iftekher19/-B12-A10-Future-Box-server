@@ -82,6 +82,24 @@ async function run() {
       }
     });
 
+    // Delete a food
+    app.delete("/foods/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const result = await foodsCollection.deleteOne({
+          _id: new ObjectId(id),
+        });
+        if (result.deletedCount === 0)
+          return res
+            .status(404)
+            .send({ success: false, message: "Food not found" });
+        res.send({ success: true, message: "Food deleted" });
+      } catch (error) {
+        console.error(error);
+        res.status(500).send({ success: false, message: "Delete failed" });
+      }
+    });
+
     //Ping the database
     await db.command({ ping: 1 });
     console.log(" Pinged the database - connection confirmed!");
