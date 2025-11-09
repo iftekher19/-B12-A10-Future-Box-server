@@ -82,6 +82,19 @@ async function run() {
       }
     });
 
+    // Get one food by id (Food Details)
+    app.get("/foods/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const food = await foodsCollection.findOne({ _id: new ObjectId(id) });
+        if (!food) return res.status(404).send({ message: "Food not found" });
+        res.send(food);
+      } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: "Failed to fetch food" });
+      }
+    });
+
     // Delete a food
     app.delete("/foods/:id", async (req, res) => {
       try {
