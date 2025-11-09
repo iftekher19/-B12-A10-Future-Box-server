@@ -65,7 +65,22 @@ async function run() {
       }
     });
 
-
+    // Update a food (Manage My Foods)
+    app.patch("/foods/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const updatedInfo = req.body;
+        const updateDoc = { $set: updatedInfo };
+        const result = await foodsCollection.updateOne(
+          { _id: new ObjectId(id) },
+          updateDoc
+        );
+        res.send({ success: true, message: "Food updated", result });
+      } catch (error) {
+        console.error(error);
+        res.status(500).send({ success: false, message: "Update failed" });
+      }
+    });
 
     //Ping the database
     await db.command({ ping: 1 });
