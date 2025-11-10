@@ -6,6 +6,7 @@ const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
 const port = process.env.PORT || 5000;
 
+
 // middleware
 app.use(cors());
 app.use(express.json());
@@ -66,6 +67,7 @@ async function run() {
       }
     });
 
+
     // Update a food (Manage My Foods)
     app.patch("/foods/:id", async (req, res) => {
       try {
@@ -114,6 +116,7 @@ async function run() {
       }
     });
 
+
     // Submit Food Request
     app.post("/requests", async (req, res) => {
       try {
@@ -134,7 +137,7 @@ async function run() {
       }
     });
 
-    // Get Requests for a Food (for Donator)
+    // Get Requests for a Food for donator
     app.get("/requests/:foodId", async (req, res) => {
       try {
         const foodId = req.params.foodId;
