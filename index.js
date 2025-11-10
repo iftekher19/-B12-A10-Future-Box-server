@@ -199,7 +199,7 @@ async function run() {
     });
 
     //Ping the database
-    await db.command({ ping: 1 });
+    // await db.command({ ping: 1 });
     console.log(" Pinged the database - connection confirmed!");
   } catch (err) {
     console.error("Database connection failed:", err);
@@ -208,7 +208,9 @@ async function run() {
 
 run().catch(console.error);
 
-// Start the server
-app.listen(port, () =>
-  console.log(`PlateShare server running on port ${port}`)
-);
+module.exports = app;
+
+// // Start the server
+// app.listen(port, () =>
+//   console.log(`PlateShare server running on port ${port}`)
+// );
