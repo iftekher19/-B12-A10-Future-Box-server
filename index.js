@@ -31,6 +31,7 @@ async function run() {
 
     const db = client.db("plateShareDB");
     const foodsCollection = db.collection("foods");
+    const foodRequestsCollection = db.collection("foodRequests");
 
     // Create Food DATA
     app.post("/foods", async (req, res) => {
@@ -110,6 +111,86 @@ async function run() {
       } catch (error) {
         console.error(error);
         res.status(500).send({ success: false, message: "Delete failed" });
+      }
+    });
+
+    // Submit Food Request
+    app.post("/requests", async (req, res) => {
+      try {
+        const newRequest = req.body;
+        newRequest.status = "pending";
+        newRequest.createdAt = new Date();
+        const result = await foodRequestsCollection.insertOne(newRequest);
+        res.status(201).send({
+          success: true,
+          message: "Food request submitted successfully",
+          result,
+        });
+      } catch (error) {
+        console.error(error);
+        res
+          .status(500)
+          .send({ success: false, message: "Failed to submit food request" });
+      }
+    });
+
+    // Get Requests for a Food (for Donator)
+    app.get("/requests/:foodId", async (req, res) => {
+      try {
+        const foodId = req.params.foodId;
+        const result = await foodRequestsCollection.find({ foodId }).toArray();
+        res.send(result);
+      } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: "Failed to fetch requests" });
+      }
+    });
+
+    // Accept / Reject Request
+    app.patch("/requests/:id", async (req, res) => {
+      try {
+        const requestId = req.params.id;
+        const { status, foodId } = req.body;
+
+        const updateReq = await foodRequestsCollection.updateOne(
+          { _id: new ObjectId(requestId) },
+          { $set: { status } }
+        );
+
+        if (status === "accepted" && foodId) {
+          await foodsCollection.updateOne(
+            { _id: new ObjectId(foodId) },
+            { $set: { food_status: "donated" } }
+          );
+        }
+
+        res.send({
+          success: true,
+          message: "Request status updated",
+          updateReq,
+        });
+      } catch (error) {
+        console.error(error);
+        res
+          .status(500)
+          .send({ success: false, message: "Failed to update request" });
+      }
+    });
+
+    // Get All Requests for a User
+    app.get("/my-requests", async (req, res) => {
+      try {
+        const { email } = req.query;
+        if (!email)
+          return res.status(400).send({ message: "Email query required" });
+
+        const result = await foodRequestsCollection
+          .find({ userEmail: email })
+          .toArray();
+        res.send(result);
+      } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: "Failed to fetch user requests" });
       }
     });
 
