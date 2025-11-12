@@ -211,6 +211,6 @@ run().catch(console.error);
 module.exports = app;
 
 // // Start the server
-// app.listen(port, () =>
-//   console.log(`PlateShare server running on port ${port}`)
-// );
+app.listen(port, () =>
+  console.log(`PlateShare server running on port ${port}`)
+);
